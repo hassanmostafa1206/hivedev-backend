@@ -38,8 +38,12 @@ db.exec(`
 		id    INTEGER PRIMARY KEY AUTOINCREMENT,
 		name  TEXT NOT NULL,
 		role  TEXT NOT NULL,
-		bio   TEXT
+		bio   TEXT,
+		image TEXT
 	);
+	
+	-- Add image column if missing (existing dbs)
+	db.exec('ALTER TABLE team ADD COLUMN image TEXT');
 
 	CREATE TABLE IF NOT EXISTS services (
 		id          INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -72,7 +76,7 @@ function seedIfEmpty() {
 		ins.run({ title:'NexaFlow SaaS',        description:'Full platform rebuild for a workflow automation startup. 3× faster load times.',   tags:JSON.stringify(['React','Node.js','PostgreSQL','AWS']),     type:'Website Development',  year:'2024', duration:'4 months', image:'images/project/bw.png'});
 		ins.run({ title:'Orbis Analytics',      description:'Real-time data dashboard for a financial analytics firm. 12 custom chart types.',  tags:JSON.stringify(['D3.js','WebSockets','Python','Redis']),    type:'Data Dashboard',       year:'2024', duration:'3 months', image:'images/project/wb.png' });
 		ins.run({ title:'Pulse E-Commerce',     description:'High-volume e-commerce platform with custom CMS and multi-vendor support.',        tags:JSON.stringify(['Next.js','Stripe','MongoDB','Docker']),    type:'Website Development',  year:'2023', duration:'6 months', image:'images/project/bw.png' });
-		ins.run({ title:'Zephyr Landing',       description:'Launch campaign landing page. Winning A/B variant achieved 8.4% conversion.',      tags:JSON.stringify(['HTML','CSS','Analytics','CRO']),           type:'Landing Page',         year:'2023', duration:'3 weeks', image:'images/project/wb.png'  });
+		ins.run({ title:'Zephyr Landing',       description:'Launch campaign landing page. Winning A/B variant achieved 8.4% conversion.',      tags:JSON.stringify(['HTML','CSS','Analytics','CRO']),           type:'Landing Page',         year:'2023', duration:'3 weeks',  image:'images/project/wb.png'  });
 		ins.run({ title:'HRConnect Portal',     description:'Employee self-service HR portal for a 2,000-person enterprise with SSO.',          tags:JSON.stringify(['React','GraphQL','PostgreSQL','SAML']),    type:'Website Development',  year:'2023', duration:'5 months', image:'images/project/bw.png' });
 		ins.run({ title:'Beacon IoT Dashboard', description:'Real-time monitoring dashboard for industrial IoT sensors.',                       tags:JSON.stringify(['Vue.js','MQTT','InfluxDB','Chart.js']),    type:'Data Dashboard',       year:'2022', duration:'4 months', image:'images/project/wb.png' });
 		})();
@@ -83,12 +87,12 @@ function seedIfEmpty() {
 	if (teamCount === 0) {
 		const ins = db.prepare('INSERT INTO team (name,role,bio,image) VALUES (@name,@role,@bio,@image)');
 		db.transaction(() => {
-		ins.run({ name:'Hassan Mostafa',   role:'Lead Architect',     bio:'Full-stack engineer with 10+ years building scalable web systems.' });
-		ins.run({ name:'Hussien Khaled',   role:'UX Engineer',        bio:'Design-obsessed frontend developer at the intersection of code and craft.' });
-		ins.run({ name:'Ziad Hossam',      role:'Backend Engineer',   bio:'API architect and database wizard. Former engineer at two YC startups.' });
-		ins.run({ name:'Ziad Osama',       role:'Frontend Developer', bio:'Pixel-perfect CSS engineer with a background in graphic design.' });
-		ins.run({ name:'Omar Yasser',      role:'DevOps Engineer',    bio:'Infrastructure engineer obsessed with reliability and speed.' });
-		ins.run({ name:'Hassan Mahmoud',   role:'DevOps Engineer',    bio:'Infrastructure engineer obsessed with reliability and speed.' });
+		ins.run({ name:'Hassan Mostafa',   role:'Lead Architect',     bio:'Full-stack engineer with 10+ years building scalable web systems.', 		   image:'images/team/HMA.png' });
+		ins.run({ name:'Hussien Khaled',   role:'UX Engineer',        bio:'Design-obsessed frontend developer at the intersection of code and craft.', image:'images/team/HKH.png' });
+		ins.run({ name:'Ziad Hossam',      role:'Backend Engineer',   bio:'API architect and database wizard. Former engineer at two YC startups.',    image:'images/team/ZHG.png' });
+		ins.run({ name:'Ziad Osama',       role:'Frontend Developer', bio:'Pixel-perfect CSS engineer with a background in graphic design.', 		   image:'images/team/ZOS.png' });
+		ins.run({ name:'Omar Yasser',      role:'DevOps Engineer',    bio:'Infrastructure engineer obsessed with reliability and speed.', 			   image:'images/team/OYA.png' });
+		ins.run({ name:'Hassan Mahmoud',   role:'DevOps Engineer',    bio:'Infrastructure engineer obsessed with reliability and speed.', 			   image:'images/team/HMH.png' });
 		})();
 		console.log('🌱 Team seeded');
 	}
@@ -97,7 +101,7 @@ function seedIfEmpty() {
 	if (serviceCount === 0) {
 		const ins = db.prepare('INSERT INTO services (number,title,description,tags) VALUES (@number,@title,@description,@tags)');
 		db.transaction(() => {
-		ins.run({ number:'01', title:'Website Development', description:'From marketing sites to complex web apps, we engineer for scale.',      tags:JSON.stringify(['React / Next.js','Node.js','TypeScript','PostgreSQL','AWS']) });
+		ins.run({ number:'01', title:'Website Development', description:'From marketing sites to complex web apps, we engineer for scale.',     tags:JSON.stringify(['React / Next.js','Node.js','TypeScript','PostgreSQL','AWS']) });
 		ins.run({ number:'02', title:'Landing Pages',       description:'Conversion-focused pages engineered to turn visitors into customers.', tags:JSON.stringify(['Conversion CRO','A/B Testing','SEO','Analytics'])           });
 		ins.run({ number:'03', title:'Data Dashboards',     description:'Real-time analytics dashboards with custom visualizations.',           tags:JSON.stringify(['D3.js','Chart.js','WebSockets','REST APIs','GraphQL'])       });
 		ins.run({ number:'04', title:'API & Backend',       description:'Robust APIs and infrastructure built to handle growth.',               tags:JSON.stringify(['Express.js','SQLite','Redis','Docker'])                      });
@@ -152,7 +156,8 @@ app.delete('/api/projects/:id', (req, res) => {
 // ══════════════════════════════════════════════════════════════
 app.get('/api/team', (req, res) => {
 	try {
-		res.json({ success:true, data: db.prepare('SELECT * FROM team ORDER BY id ASC').all() });
+		const teamData = db.prepare('SELECT * FROM team ORDER BY id ASC').all();
+		res.json({ success:true, data: teamData.map(t => ({ ...t })) });
 	} catch(e){ res.status(500).json({ success:false, message:e.message }); }
 });
 
