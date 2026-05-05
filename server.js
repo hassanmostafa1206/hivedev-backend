@@ -31,6 +31,7 @@ db.exec(`
 		type        TEXT    DEFAULT 'General',
 		year        TEXT    DEFAULT '2024',
 		duration    TEXT    DEFAULT 'N/A',
+		image 	 	TEXT    DEFAULT 'images/project/default.png',
 		created_at  TEXT    DEFAULT (datetime('now'))
 	);
 
@@ -41,9 +42,7 @@ db.exec(`
 		bio   TEXT,
 		image TEXT
 	);
-	
 	-- Add image column if missing (existing dbs)
-	db.exec('ALTER TABLE team ADD COLUMN image TEXT');
 
 	CREATE TABLE IF NOT EXISTS services (
 		id          INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -62,6 +61,10 @@ db.exec(`
 		received_at TEXT DEFAULT (datetime('now'))
 	);
 `);
+try {	
+	db.exec('ALTER TABLE team ADD COLUMN image TEXT');
+} catch(e) {}
+
 
 // ══════════════════════════════════════════════════════════════
 //  Seed البيانات الأولية لو الجداول فاضية
