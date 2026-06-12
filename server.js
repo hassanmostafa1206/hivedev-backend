@@ -12,7 +12,7 @@ const app  = express();
 const PORT = process.env.PORT || 3000;
 
 // ── كلمة السر — غيرها لما تحب ────────────────────────────────
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '*team=3H_2Z_1O#';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'team=3H_2Z_1O';
 
 // ── Allowed Origins ───────────────────────────────────────────
 const ALLOWED_ORIGINS = [
