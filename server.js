@@ -7,12 +7,73 @@ const express  = require('express');
 const cors     = require('cors');
 const path     = require('path');
 const Database = require('better-sqlite3');
+const nodemailer = require('nodemailer');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
 
 // ── كلمة السر — غيرها لما تحب ────────────────────────────────
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'team=3H_2Z_1O';
+
+// ── Email Notifications ──────────────────────────────────────
+const NOTIFY_EMAIL   = process.env.NOTIFY_EMAIL   || 'hivedev.pro@gmail.com';   // الإيميل اللي هتبعت منه وعليه
+const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD || 'egxc juug vgen kztz';   // App Password بتاع Gmail
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: NOTIFY_EMAIL,
+    pass: EMAIL_PASSWORD,
+  },
+});
+
+async function sendNotification(name, email, type, message) {
+  if (!NOTIFY_EMAIL || !EMAIL_PASSWORD) return;
+  try {
+    await transporter.sendMail({
+      from: `"HiveDev Notifications" <${NOTIFY_EMAIL}>`,
+      to: NOTIFY_EMAIL,
+      subject: `📩 New Message from ${name} — HiveDev`,
+      html: `
+        <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#080e1a;color:#e8f0ff;border-radius:12px;overflow:hidden">
+          <div style="background:#4d9fff;padding:24px 32px">
+            <h2 style="margin:0;color:#fff;font-size:20px">🐝 New Contact Message</h2>
+            <p style="margin:4px 0 0;color:rgba(255,255,255,.8);font-size:13px">HiveDev — hivedev-pro.netlify.app</p>
+          </div>
+          <div style="padding:32px">
+            <table style="width:100%;border-collapse:collapse">
+              <tr>
+                <td style="padding:10px 0;border-bottom:1px solid #1a4fa0;color:#4a6080;font-size:12px;text-transform:uppercase;letter-spacing:1px;width:100px">Name</td>
+                <td style="padding:10px 0;border-bottom:1px solid #1a4fa0;font-size:15px">${name}</td>
+              </tr>
+              <tr>
+                <td style="padding:10px 0;border-bottom:1px solid #1a4fa0;color:#4a6080;font-size:12px;text-transform:uppercase;letter-spacing:1px">Email</td>
+                <td style="padding:10px 0;border-bottom:1px solid #1a4fa0;font-size:15px"><a href="mailto:${email}" style="color:#4d9fff">${email}</a></td>
+              </tr>
+              <tr>
+                <td style="padding:10px 0;border-bottom:1px solid #1a4fa0;color:#4a6080;font-size:12px;text-transform:uppercase;letter-spacing:1px">Type</td>
+                <td style="padding:10px 0;border-bottom:1px solid #1a4fa0;font-size:15px">${type}</td>
+              </tr>
+              <tr>
+                <td style="padding:10px 0;color:#4a6080;font-size:12px;text-transform:uppercase;letter-spacing:1px;vertical-align:top">Message</td>
+                <td style="padding:10px 0;font-size:15px;line-height:1.6">${message}</td>
+              </tr>
+            </table>
+            <div style="margin-top:24px;padding:16px;background:#0d1628;border-radius:8px;border:1px solid #1a4fa0">
+              <a href="mailto:${email}" style="color:#4d9fff;font-size:13px">↩ Reply to ${name}</a>
+            </div>
+          </div>
+          <div style="padding:16px 32px;background:#050b14;text-align:center">
+            <p style="margin:0;color:#4a6080;font-size:12px">HiveDev — Automated Notification</p>
+          </div>
+        </div>
+      `,
+    });
+    console.log(`📧 Notification sent to ${NOTIFY_EMAIL}`);
+  } catch(e) {
+    console.log('📧 Email notification failed:', e.message);
+  }
+}
 
 // ── Allowed Origins ───────────────────────────────────────────
 const ALLOWED_ORIGINS = [
@@ -449,6 +510,7 @@ app.post('/api/contact', contactLimit, (req, res) => {
     );
 
     console.log(`\n📩 رسالة جديدة #${r.lastInsertRowid} من: ${name} <${email}>`);
+    sendNotification(name, email, type, message);
     res.status(201).json({ success: true, message: 'Message received!', id: r.lastInsertRowid });
   } catch(e) { res.status(500).json({ success: false, message: e.message }); }
 });
