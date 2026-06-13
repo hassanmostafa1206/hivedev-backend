@@ -16,7 +16,7 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'team=3H_2Z_1O';
 
 // ── Allowed Origins ───────────────────────────────────────────
 const ALLOWED_ORIGINS = [
-  'https://hivedev-pro.netlify.app',
+  'https://hivedev-pro.vercel.app',
   'http://localhost:3000',
   'http://localhost:5500',
   'http://127.0.0.1:5500',
@@ -211,7 +211,7 @@ function requireAdmin(req, res, next) {
 //  SITEMAP — بيتولد أوتوماتيك من الـ DB
 // ══════════════════════════════════════════════════════════════
 app.get('/sitemap.xml', (req, res) => {
-  const base = 'https://hivedev-pro.netlify.app';
+  const base = 'https://hivedev-pro.vercel.app';
   const today = new Date().toISOString().split('T')[0];
 
   const staticUrls = [
@@ -241,7 +241,7 @@ ${staticUrls.map(u => `  <url>
 //  SCHEMA.ORG endpoint — JSON-LD جاهز للفرونت
 // ══════════════════════════════════════════════════════════════
 app.get('/api/schema', (req, res) => {
-  const base = 'https://hivedev-pro.netlify.app';
+  const base = 'https://hivedev-pro.vercel.app';
   const services = parseRows(db.prepare('SELECT * FROM services ORDER BY number ASC').all());
 
   res.json({
