@@ -35,7 +35,7 @@ async function sendNotification(name, email, type, message) {
           <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#080e1a;color:#e8f0ff;border-radius:12px;overflow:hidden">
             <div style="background:#4d9fff;padding:24px 32px">
               <h2 style="margin:0;color:#fff;font-size:20px">🐝 New Contact Message</h2>
-              <p style="margin:4px 0 0;color:rgba(255,255,255,.8);font-size:13px">HiveDev — hivedev-pro.netlify.app</p>
+              <p style="margin:4px 0 0;color:rgba(255,255,255,.8);font-size:13px">HiveDev — hivedev-pro.vercel.app</p>
             </div>
             <div style="padding:32px">
               <table style="width:100%;border-collapse:collapse">
